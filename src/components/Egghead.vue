@@ -1,6 +1,6 @@
 <template>
   <div id="egghead">
-    <h1>This is where the Egghead Videos Go</h1>
+    <h1>This is where the Egghead Videos Go {{this.$route.meta.requiresAuth}}</h1>
   </div>
 </template>
 

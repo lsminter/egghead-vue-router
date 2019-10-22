@@ -1,21 +1,16 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import BlogRoutes from './blog-routes'
-
-import Home from '../components/Home.vue'
-import Egghead from '../components/Egghead.vue'
-import PageNotFound from '../components/PageNotFound.vue'
-import FailedAuth from '../components/FailedAuth.vue'
-
-Vue.config.productionTip = false
+import Home from '../components/Home'
+import Egghead from '../components/Egghead'
+import PageNotFound from '../components/PageNotFound'
+import FailedAuth from '../components/FailedAuth'
+import blogRoutes from './blog-routes'
+import aboutMeRoute from './about-me'
 
 Vue.use(VueRouter)
 
 const routes = [
-  ...BlogRoutes,
-
   {
-    //show home path, only one of these can exist
     path: '/',
     component: Home,
     meta: {
@@ -29,28 +24,38 @@ const routes = [
       requiresAuth: true,
     },
   },
-  { path: '/failed', component: FailedAuth },
-  { path: '/pageNotFound', alias: '*', component: PageNotFound },
+  ...blogRoutes,
+  ...aboutMeRoute,
+  {
+    path: '/failed',
+    component: FailedAuth,
+  },
+  {
+    path: 'pageNotFound',
+    alias: '*',
+    component: PageNotFound,
+  },
 ]
 
 const router = new VueRouter({
   routes,
-  mode: 'history',
+  mode: 'history'
 })
+
+function isAuthenticated() {
+  return true
+}
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (isAuthenticated()) {
       next()
-      return
+    } else {
+      next('/failed')
     }
-    next('/failed')
+  } else {
+    next()
   }
-  next()
 })
-
-function isAuthenticated() {
-  return false
-}
 
 export default router
